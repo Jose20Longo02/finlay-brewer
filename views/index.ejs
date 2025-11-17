@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;600;700&family=Inter:wght@200;300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+    <%- include('partials/header') %>
+    
+    <main>
+        <!-- Section 1: Hero -->
+        <section id="hero" class="hero">
+            <div class="hero-background">
+                <div class="hero-gradient"></div>
+            </div>
+            <div class="hero-content">
+                <h1 id="heroHeadline" class="hero-headline">Live the Riviera Dream</h1>
+                <p id="heroSubcopy" class="hero-subcopy">From seaside apartments to hilltop villas, our international team helps you buy with confidence and ease — wherever you are in the world.</p>
+                <div class="hero-actions">
+                    <a href="#contact" class="hero-button hero-button-primary">Schedule a call</a>
+                    <a href="#search" class="hero-button hero-button-secondary">Explore properties</a>
+                </div>
+            </div>
+            <div id="heroCarousel" class="hero-carousel">
+                <div class="carousel-track" id="carouselTrack">
+                    <!-- Cards will be dynamically inserted here -->
+                </div>
+                <button class="carousel-nav carousel-prev" aria-label="Previous property">‹</button>
+                <button class="carousel-nav carousel-next" aria-label="Next property">›</button>
+            </div>
+        </section>
+
+        <!-- Section 2: We Make It Simple -->
+        <section id="buyersHelp" class="buyers-help">
+            <h2 class="section-title">We Make It Simple for International Buyers</h2>
+            <div id="buyersAccordion" class="accordion-container">
+                <div class="accordion-panels">
+                    <div class="accordion-panel active" id="buyersPanel-1" data-panel="1">
+                        <div class="panel-label">Find the Right Property</div>
+                        <div class="panel-content">
+                            <div class="panel-background"></div>
+                            <div class="panel-text">
+                                <h3>Find the Right Property</h3>
+                                <p>Discover your perfect property match with our curated selection.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-panel" id="buyersPanel-2" data-panel="2">
+                        <div class="panel-label">Legal & Taxes Requirements</div>
+                        <div class="panel-content">
+                            <div class="panel-background"></div>
+                            <div class="panel-text">
+                                <h3>Legal & Taxes Requirements</h3>
+                                <p>Navigate French property law and tax requirements with expert guidance.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-panel" id="buyersPanel-3" data-panel="3">
+                        <div class="panel-label">Full English Support</div>
+                        <div class="panel-content">
+                            <div class="panel-background"></div>
+                            <div class="panel-text">
+                                <h3>Full English Support</h3>
+                                <p>Get comprehensive support in English throughout your buying journey.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-panel" id="buyersPanel-4" data-panel="4">
+                        <div class="panel-label">After-Sale Assistance</div>
+                        <div class="panel-content">
+                            <div class="panel-background"></div>
+                            <div class="panel-text">
+                                <h3>After-Sale Assistance</h3>
+                                <p>Get ongoing help with property management and maintenance.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-navigation">
+                    <button class="accordion-nav accordion-prev" aria-label="Previous panel">‹</button>
+                    <button class="accordion-nav accordion-next" aria-label="Next panel">›</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Property Search -->
+        <section id="search" class="property-search">
+            <div class="search-header">
+                <h2 class="section-title">Explore Our Handpicked Properties in Nice</h2>
+            </div>
+            <div id="filters" class="filters-toolbar">
+                <div class="filter-group">
+                    <label for="typeFilter">Type:</label>
+                    <select id="typeFilter" class="filter-input">
+                        <option value="">All Types</option>
+                        <option value="villa">Villa</option>
+                        <option value="apartment">Apartment</option>
+                        <option value="house">House</option>
+                        <option value="penthouse">Penthouse</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="priceFilter">Price Range:</label>
+                    <select id="priceFilter" class="filter-input">
+                        <option value="">All Prices</option>
+                        <option value="0-500000">€0 - €500k</option>
+                        <option value="500000-1000000">€500k - €1M</option>
+                        <option value="1000000-1500000">€1M - €1.5M</option>
+                        <option value="1500000-2000000">€1.5M - €2M</option>
+                        <option value="2000000-3000000">€2M - €3M</option>
+                        <option value="3000000-5000000">€3M - €5M</option>
+                        <option value="5000000-10000000">€5M - €10M</option>
+                        <option value="10000000+">€10M+</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="roomFilter">Room Range:</label>
+                    <select id="roomFilter" class="filter-input">
+                        <option value="">All Sizes</option>
+                        <option value="1-2">1-2 Rooms</option>
+                        <option value="3-4">3-4 Rooms</option>
+                        <option value="5-6">5-6 Rooms</option>
+                        <option value="7+">7+ Rooms</option>
+                    </select>
+                </div>
+                <button id="searchButton" class="search-button">Search</button>
+            </div>
+            <div id="grid" class="properties-grid">
+                <!-- Property cards will be dynamically inserted here -->
+            </div>
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <p>No properties match your filters. Try broadening your search.</p>
+            </div>
+            <div class="properties-cta-banner">
+                <div class="properties-cta-inner">
+                    <div class="properties-cta-text">
+                        <div class="properties-cta-eyebrow">
+                            <span class="properties-cta-eyebrow-dot"></span>
+                            1:1 Personal Advisory
+                        </div>
+                        <h3>Didn’t find the exact property you’re looking for?</h3>
+                        <p>We have many more off-market and upcoming listings available. <span class="properties-cta-highlight">Request a personal 1:1 advisory</span> and we’ll handpick options that match your brief.</p>
+                    </div>
+                    <a href="#contact" class="properties-cta-button">
+                        Request your shortlist
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Data Strip -->
+        <section id="statsStrip" class="stats-strip">
+            <div class="stats-background">
+                <div class="stats-overlay"></div>
+            </div>
+            <div class="stats-content">
+                <h2 class="stats-title">What does Nice have to offer?</h2>
+                <div class="stats-grid">
+                    <div class="stat-item" id="statItem-1">
+                        <div class="stat-number"><span class="stat-value">0</span><span class="stat-unit">%</span></div>
+                        <div class="stat-caption">Annual Price Growth</div>
+                    </div>
+                    <div class="stat-item" id="statItem-2">
+                        <div class="stat-number"><span class="stat-value">0</span><span class="stat-unit">+</span></div>
+                        <div class="stat-caption">Days of Sunshine Per Year</div>
+                    </div>
+                    <div class="stat-item" id="statItem-3">
+                        <div class="stat-number">
+                            <span class="stat-value-range">
+                                <span class="stat-value-min">0</span>–<span class="stat-value-max">0</span>
+                            </span>
+                            <span class="stat-unit">%</span>
+                        </div>
+                        <div class="stat-caption">Steady Rental Yields</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Contact -->
+        <section id="contact" class="contact-section">
+            <h2 class="contact-title">Contact us for more information:</h2>
+            <form id="contactForm" class="contact-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" id="firstName" name="firstName" placeholder="First Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="lastName" name="lastName" placeholder="Last Name" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" id="countryCode" name="countryCode" placeholder="Country code" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="Phone Number" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <input type="email" id="emailAddress" name="emailAddress" placeholder="Email Address" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <textarea id="message" name="message" placeholder="Message" rows="5" required></textarea>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <button type="submit" id="submitButton" class="submit-button">Submit</button>
+                </div>
+            </form>
+        </section>
+    </main>
+    
+    <div id="propertyModal" class="property-modal" aria-hidden="true">
+        <div class="property-modal__overlay" data-modal-close></div>
+        <div class="property-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="propertyModalTitle" tabindex="-1">
+            <button type="button" class="property-modal__close" data-modal-close aria-label="Close property details">
+                <span class="property-modal__close-icon">&times;</span>
+            </button>
+            <div class="property-modal__content">
+                <div class="property-modal__gallery">
+                    <div class="property-modal__main">
+                        <img src="" alt="" id="propertyModalImage">
+                        <button type="button" class="property-modal__nav property-modal__nav--prev" data-modal-prev aria-label="Previous image">
+                            <span class="property-modal__nav-icon">‹</span>
+                        </button>
+                        <button type="button" class="property-modal__nav property-modal__nav--next" data-modal-next aria-label="Next image">
+                            <span class="property-modal__nav-icon">›</span>
+                        </button>
+                    </div>
+                    <div class="property-modal__counter" id="propertyModalCounter">1 / 1</div>
+                    <div class="property-modal__thumbnails" id="propertyModalThumbnails"></div>
+                </div>
+                <div class="property-modal__details">
+                    <div class="property-modal__header">
+                        <h3 class="property-modal__title" id="propertyModalTitle"></h3>
+                        <p class="property-modal__location" id="propertyModalLocation"></p>
+                        <div class="property-modal__price-row">
+                            <div class="property-modal__price" id="propertyModalPrice"></div>
+                            <button type="button" class="property-modal__cta" id="propertyModalCTA">Request Information</button>
+                        </div>
+                        <div class="property-modal__stats" id="propertyModalStats"></div>
+                    </div>
+                    <p class="property-modal__description" id="propertyModalDescription"></p>
+                    <form id="propertyInquiryForm" class="property-modal__form">
+                        <h4>Request more details</h4>
+                        <input type="hidden" id="propertyInquiryProperty" name="property">
+                        <div class="property-modal__form-row">
+                            <div class="field">
+                                <label for="propertyInquiryName">Full Name</label>
+                                <input type="text" id="propertyInquiryName" name="name" placeholder="Your name" required>
+                            </div>
+                            <div class="field">
+                                <label for="propertyInquiryEmail">Email</label>
+                                <input type="email" id="propertyInquiryEmail" name="email" placeholder="Your email" required>
+                            </div>
+                        </div>
+                        <div class="property-modal__form-row">
+                            <div class="field field--country-code">
+                                <label for="propertyInquiryCountryCode">Country Code</label>
+                                <input type="text" id="propertyInquiryCountryCode" name="countryCode" placeholder="+1" required>
+                            </div>
+                            <div class="field">
+                                <label for="propertyInquiryPhone">Phone / WhatsApp</label>
+                                <input type="tel" id="propertyInquiryPhone" name="phone" placeholder="Phone number" required>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label for="propertyInquiryMessage">Message</label>
+                            <textarea id="propertyInquiryMessage" name="message" placeholder="Tell us about your plans" required></textarea>
+                        </div>
+                        <button type="submit" id="propertyInquirySubmit" class="property-modal__submit">Send Inquiry</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <%- include('partials/footer') %>
+    
+    <script src="/js/dataStore.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/properties.js"></script>
+    <script src="/js/carousel.js"></script>
+    <script src="/js/accordion.js"></script>
+    <script src="/js/stats.js"></script>
+    <script src="/js/form.js"></script>
+    <script src="/js/ctaBanner.js"></script>
+</body>
+</html>

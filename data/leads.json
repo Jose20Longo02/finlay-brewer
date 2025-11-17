@@ -1,0 +1,43 @@
+[
+  {
+    "id": "1763154317829",
+    "timestamp": "2025-11-14T21:05:17.829Z",
+    "firstName": "Armando Jose",
+    "lastName": "Pérez Longo",
+    "countryCode": "Guatemala",
+    "phoneNumber": "36040862",
+    "emailAddress": "Jose20.Longo02@gmail.com",
+    "message": "asdfasdfasdf"
+  },
+  {
+    "id": "1763154544485",
+    "timestamp": "2025-11-14T21:09:04.485Z",
+    "name": "José Armando Longo Pérez",
+    "email": "Jose20.Longo02@gmail.com",
+    "phone": "36040862",
+    "message": "Hi, I'm interested in \"12 Units Building Near Promenade des Anglais\". Please send me more information.",
+    "property": "12 Units Building Near Promenade des Anglais"
+  },
+  {
+    "id": "1763154792833",
+    "timestamp": "2025-11-14T21:13:12.833Z",
+    "name": "José Armando Longo Pérez",
+    "email": "Jose20.Longo02@gmail.com",
+    "countryCode": "+502",
+    "phone": "36040862",
+    "phoneFull": "+502 36040862",
+    "message": "Hi, I'm interested in \"12 Units Building Near Promenade des Anglais\". Please send me more information.",
+    "property": "12 Units Building Near Promenade des Anglais"
+  },
+  {
+    "id": "1763155183492",
+    "timestamp": "2025-11-14T21:19:43.493Z",
+    "name": "José Armando Longo Pérez",
+    "email": "Jose20.Longo02@gmail.com",
+    "countryCode": "+502",
+    "phone": "36040862",
+    "phoneFull": "+502 36040862",
+    "message": "Hi, I'm interested in \"Mediterranean Masterpiece in the Heart of Nice\". Please send me more information.",
+    "property": "Mediterranean Masterpiece in the Heart of Nice"
+  }
+]
