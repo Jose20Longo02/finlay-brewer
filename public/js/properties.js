@@ -337,6 +337,8 @@ class PropertyModal {
 
             const img = document.createElement('img');
             img.src = src;
+            img.loading = 'lazy'; // Lazy load property images
+            img.decoding = 'async'; // Async decoding for better performance
             img.alt = this.property?.title
                 ? `${this.property.title} thumbnail ${index + 1}`
                 : `Property thumbnail ${index + 1}`;
