@@ -29,22 +29,33 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, { passive: true });
     
-    // Smooth scroll for anchor links
+    // Smooth scroll for anchor links (only for internal links)
     function setupSmoothScroll(links) {
         links.forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 const href = this.getAttribute('href');
+                
+                // Skip if it's an empty hash or header
                 if (href === '#' || href === '#header') return;
                 
-                e.preventDefault();
-                const target = document.querySelector(href);
-                if (target) {
-                    const headerHeight = header.offsetHeight;
-                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - headerHeight;
-                    window.scrollTo({
-                        top: targetPosition,
-                        behavior: 'smooth'
-                    });
+                // Skip external links (http:// or https://)
+                if (href && (href.startsWith('http://') || href.startsWith('https://'))) {
+                    // Allow external links to work normally
+                    return;
+                }
+                
+                // Only prevent default and smooth scroll for internal anchor links
+                if (href && href.startsWith('#')) {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        const headerHeight = header.offsetHeight;
+                        const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
                 }
             });
         });
