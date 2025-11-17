@@ -104,12 +104,37 @@ LEAD_EMAIL=your-email@gmail.com
 - Check server logs for initialization errors
 - You can manually run: `npm run init-db` (if you have shell access)
 
-### Email Not Sending
+### Email Not Sending / Connection Timeout
 
+**Error: "Connection timeout" or "ETIMEDOUT"**
+
+This is common on Render due to SMTP port restrictions. Try these solutions:
+
+**Solution 1: Use Port 465 with SSL (Recommended)**
+- Change `SMTP_PORT` from `587` to `465`
+- The code automatically uses SSL when port 465 is detected
+- Update in Render: Environment → `SMTP_PORT` → `465`
+
+**Solution 2: Use a Transactional Email Service**
+- **SendGrid** (Free tier: 100 emails/day)
+  - Sign up at https://sendgrid.com
+  - Get API key from Settings → API Keys
+  - Update code to use SendGrid API (requires code changes)
+  
+- **Mailgun** (Free tier: 5,000 emails/month)
+  - Sign up at https://mailgun.com
+  - Use SMTP settings provided by Mailgun
+  
+- **AWS SES** (Very cheap, pay per email)
+  - More complex setup but very reliable
+
+**Solution 3: Verify SMTP Settings**
 - Verify SMTP credentials are correct
 - For Gmail, ensure you're using an App Password (not regular password)
 - Check that 2-Factor Authentication is enabled on Gmail account
-- Check server logs for SMTP errors
+- Try different SMTP hosts if Gmail doesn't work
+
+**Note:** Leads are still saved to the database even if email fails. Check your PostgreSQL database to see all leads.
 
 ### Build Failures
 

@@ -11,21 +11,35 @@ class LeadHandler {
         // Email configuration from environment variables
         // For Gmail: Use App Password (not regular password)
         // For other providers: Adjust settings accordingly
+        
+        const smtpPort = parseInt(process.env.SMTP_PORT || '587');
+        const useSecure = smtpPort === 465;
+        
         this.transporter = nodemailer.createTransport({
             host: process.env.SMTP_HOST || 'smtp.gmail.com',
-            port: process.env.SMTP_PORT || 587,
-            secure: false, // true for 465, false for other ports
+            port: smtpPort,
+            secure: useSecure, // true for 465, false for other ports
             auth: {
                 user: process.env.SMTP_USER,
                 pass: process.env.SMTP_PASS
-            }
+            },
+            // Connection timeout settings for Render/cloud environments
+            connectionTimeout: 10000, // 10 seconds
+            greetingTimeout: 10000, // 10 seconds
+            socketTimeout: 10000, // 10 seconds
+            // Retry settings
+            pool: true,
+            maxConnections: 1,
+            maxMessages: 3
         });
 
-        // Verify email configuration
+        // Verify email configuration (non-blocking, don't fail if email is down)
         if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+            // Don't block startup if email verification fails
             this.transporter.verify((error, success) => {
                 if (error) {
-                    console.error('Email configuration error:', error);
+                    console.warn('Email configuration warning (emails may still work):', error.message);
+                    console.warn('Tip: Try using port 465 with SSL, or check if SMTP ports are accessible from Render');
                 } else {
                     console.log('Email server is ready to send messages');
                 }
@@ -109,7 +123,8 @@ class LeadHandler {
         const emailBody = this.formatEmailBody(leadData, isPropertyInquiry);
 
         try {
-            const info = await this.transporter.sendMail({
+            // Set a timeout for email sending to prevent hanging
+            const emailPromise = this.transporter.sendMail({
                 from: `"${process.env.SMTP_FROM_NAME || 'Finlay Brewer Website'}" <${process.env.SMTP_USER}>`,
                 to: recipientEmail,
                 replyTo: leadData.email || leadData.emailAddress,
@@ -118,10 +133,22 @@ class LeadHandler {
                 text: this.formatEmailText(leadData, isPropertyInquiry)
             });
 
+            // Add timeout wrapper (15 seconds max)
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('Email send timeout')), 15000);
+            });
+
+            const info = await Promise.race([emailPromise, timeoutPromise]);
+
             console.log('Email sent:', info.messageId);
             return true;
         } catch (error) {
-            console.error('Error sending email:', error);
+            // Log error but don't throw - lead is already saved
+            console.error('Error sending email notification:', error.message);
+            console.error('Lead was saved successfully, but email notification failed.');
+            console.error('This is often due to SMTP port restrictions on Render. Consider:');
+            console.error('1. Using port 465 with SSL (set SMTP_PORT=465)');
+            console.error('2. Using a transactional email service (SendGrid, Mailgun, etc.)');
             return false;
         }
     }
