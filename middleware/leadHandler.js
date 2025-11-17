@@ -1,11 +1,9 @@
 // Lead Handler - Processes and stores form submissions
-const fs = require('fs').promises;
-const path = require('path');
 const nodemailer = require('nodemailer');
+const { query } = require('../config/database');
 
 class LeadHandler {
     constructor() {
-        this.leadsFilePath = path.join(__dirname, '../data/leads.json');
         this.initEmailTransporter();
     }
 
@@ -39,35 +37,58 @@ class LeadHandler {
 
     async saveLead(leadData) {
         try {
-            // Ensure data directory exists
-            const dataDir = path.dirname(this.leadsFilePath);
-            await fs.mkdir(dataDir, { recursive: true });
+            // Determine if it's a property inquiry or contact form
+            const isPropertyInquiry = leadData.property !== undefined;
 
-            // Read existing leads
-            let leads = [];
-            try {
-                const data = await fs.readFile(this.leadsFilePath, 'utf8');
-                leads = JSON.parse(data);
-            } catch (error) {
-                // File doesn't exist yet, start with empty array
-                leads = [];
-            }
-
-            // Add new lead with timestamp
-            const lead = {
-                id: Date.now().toString(),
-                timestamp: new Date().toISOString(),
-                ...leadData
+            // Prepare data for database insertion
+            const insertData = {
+                first_name: leadData.firstName || null,
+                last_name: leadData.lastName || null,
+                name: leadData.name || null,
+                email: leadData.email || null,
+                email_address: leadData.emailAddress || null,
+                phone: leadData.phone || null,
+                phone_number: leadData.phoneNumber || null,
+                country_code: leadData.countryCode || null,
+                phone_full: leadData.phoneFull || null,
+                property: leadData.property || null,
+                message: leadData.message || null,
+                lead_data: leadData // Store full data as JSONB for flexibility
             };
 
-            leads.push(lead);
+            // Insert into database
+            const result = await query(
+                `INSERT INTO leads (
+                    first_name, last_name, name, email, email_address,
+                    phone, phone_number, country_code, phone_full,
+                    property, message, lead_data
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+                RETURNING id, timestamp, created_at`,
+                [
+                    insertData.first_name,
+                    insertData.last_name,
+                    insertData.name,
+                    insertData.email,
+                    insertData.email_address,
+                    insertData.phone,
+                    insertData.phone_number,
+                    insertData.country_code,
+                    insertData.phone_full,
+                    insertData.property,
+                    insertData.message,
+                    JSON.stringify(insertData.lead_data)
+                ]
+            );
 
-            // Save back to file
-            await fs.writeFile(this.leadsFilePath, JSON.stringify(leads, null, 2));
-
-            return lead;
+            const savedLead = result.rows[0];
+            
+            return {
+                id: savedLead.id.toString(),
+                timestamp: savedLead.timestamp.toISOString(),
+                ...leadData
+            };
         } catch (error) {
-            console.error('Error saving lead:', error);
+            console.error('Error saving lead to database:', error);
             throw error;
         }
     }

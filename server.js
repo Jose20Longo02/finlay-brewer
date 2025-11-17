@@ -4,6 +4,9 @@ const path = require('path');
 const bodyParser = require('body-parser');
 require('dotenv').config();
 
+// Initialize database connection
+const { initDatabase } = require('./config/database');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -20,10 +23,23 @@ app.use(express.static(path.join(__dirname, 'public')));
 const indexRoutes = require('./routes/index');
 app.use('/', indexRoutes);
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+// Initialize database and start server
+async function startServer() {
+  try {
+    // Initialize database schema
+    await initDatabase();
+    
+    // Start server
+    app.listen(PORT, () => {
+      console.log(`Server is running on http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+}
+
+startServer();
 
 module.exports = app;
 
