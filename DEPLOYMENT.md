@@ -66,8 +66,12 @@ SMTP_PORT=587
 SMTP_USER=your-email@gmail.com
 SMTP_PASS=your-gmail-app-password
 SMTP_FROM_NAME=Finlay Brewer Website
-LEAD_EMAIL=your-email@gmail.com
+LEAD_EMAIL=your-email@gmail.com,another-email@gmail.com,third-email@domain.com
 ```
+
+**Multiple Recipients:** You can send lead notifications to multiple email addresses by separating them with commas in the `LEAD_EMAIL` variable. For example:
+- Single email: `LEAD_EMAIL=your-email@gmail.com`
+- Multiple emails: `LEAD_EMAIL=email1@gmail.com,email2@gmail.com,email3@domain.com`
 
 **Note:** If both are set, SendGrid will be used automatically (more reliable on Render).
 
@@ -188,7 +192,7 @@ That's it! The code will automatically use SendGrid when `SENDGRID_API_KEY` is s
 | `SMTP_USER` | No* | SMTP username/email (if not using SendGrid) | `your-email@gmail.com` |
 | `SMTP_PASS` | No* | SMTP password/app password (if not using SendGrid) | `your-app-password` |
 | `SMTP_FROM_NAME` | No | Email sender name | `Finlay Brewer Website` |
-| `LEAD_EMAIL` | No* | Email to receive lead notifications | `your-email@gmail.com` |
+| `LEAD_EMAIL` | No* | Email(s) to receive lead notifications (comma-separated for multiple) | `your-email@gmail.com` or `email1@gmail.com,email2@gmail.com` |
 
 *Required if you want email notifications to work. SendGrid is recommended for Render.
 

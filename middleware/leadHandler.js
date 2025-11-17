@@ -21,6 +21,30 @@ class LeadHandler {
         return 'none';
     }
 
+    /**
+     * Parse recipient emails from environment variable
+     * Supports single email or comma-separated list
+     * @returns {string[]} Array of email addresses
+     */
+    getRecipientEmails() {
+        const leadEmail = process.env.LEAD_EMAIL;
+        const smtpUser = process.env.SMTP_USER;
+        const sendgridFrom = process.env.SENDGRID_FROM_EMAIL;
+        
+        // Get the email string (prefer LEAD_EMAIL, fallback to others)
+        const emailString = leadEmail || smtpUser || sendgridFrom;
+        
+        if (!emailString) {
+            return [];
+        }
+        
+        // Split by comma and clean up (trim whitespace, remove empty strings)
+        return emailString
+            .split(',')
+            .map(email => email.trim())
+            .filter(email => email.length > 0 && email.includes('@'));
+    }
+
     initEmailTransporter() {
         if (this.emailMethod === 'sendgrid') {
             // Initialize SendGrid
@@ -148,7 +172,14 @@ class LeadHandler {
             return false;
         }
 
-        const recipientEmail = process.env.LEAD_EMAIL || process.env.SMTP_USER || process.env.SENDGRID_FROM_EMAIL;
+        // Get recipient emails (supports multiple comma-separated emails)
+        const recipientEmails = this.getRecipientEmails();
+        
+        if (recipientEmails.length === 0) {
+            console.warn('No recipient emails configured. Set LEAD_EMAIL environment variable.');
+            return false;
+        }
+
         const isPropertyInquiry = leadData.property !== undefined;
 
         const subject = isPropertyInquiry
@@ -158,6 +189,8 @@ class LeadHandler {
         const emailBody = this.formatEmailBody(leadData, isPropertyInquiry);
         const emailText = this.formatEmailText(leadData, isPropertyInquiry);
 
+        console.log(`Sending email notification to ${recipientEmails.length} recipient(s): ${recipientEmails.join(', ')}`);
+
         try {
             if (this.emailMethod === 'sendgrid') {
                 // Use SendGrid API
@@ -165,7 +198,7 @@ class LeadHandler {
                 const fromName = process.env.SMTP_FROM_NAME || 'Finlay Brewer Website';
 
                 const msg = {
-                    to: recipientEmail,
+                    to: recipientEmails, // SendGrid accepts array of emails
                     from: {
                         email: fromEmail,
                         name: fromName
@@ -177,12 +210,15 @@ class LeadHandler {
                 };
 
                 await sgMail.send(msg);
-                console.log('Email sent via SendGrid');
+                console.log(`Email sent via SendGrid to ${recipientEmails.length} recipient(s)`);
                 return true;
             } else {
                 // Use SMTP with retry logic
                 const fromEmail = process.env.SMTP_USER;
                 const fromName = process.env.SMTP_FROM_NAME || 'Finlay Brewer Website';
+
+                // For SMTP, convert array to comma-separated string or use array (nodemailer supports both)
+                const toEmails = recipientEmails.join(', ');
 
                 // Retry logic for SMTP (up to 3 attempts)
                 let lastError;
@@ -195,7 +231,7 @@ class LeadHandler {
                         // Create email promise
                         const emailPromise = this.transporter.sendMail({
                             from: `"${fromName}" <${fromEmail}>`,
-                            to: recipientEmail,
+                            to: toEmails, // nodemailer accepts comma-separated string or array
                             replyTo: leadData.email || leadData.emailAddress,
                             subject: subject,
                             html: emailBody,
@@ -209,7 +245,7 @@ class LeadHandler {
 
                         const info = await Promise.race([emailPromise, timeoutPromise]);
 
-                        console.log(`Email sent via SMTP (attempt ${attempt}):`, info.messageId);
+                        console.log(`Email sent via SMTP (attempt ${attempt}) to ${recipientEmails.length} recipient(s):`, info.messageId);
                         return true;
                     } catch (error) {
                         lastError = error;
