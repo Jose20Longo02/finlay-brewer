@@ -49,6 +49,17 @@ PORT=10000
 
 ### Email Configuration (for lead notifications):
 
+**Option 1: SendGrid (Recommended for Render - More Reliable)**
+
+```
+SENDGRID_API_KEY=SG.your-api-key-here
+SENDGRID_FROM_EMAIL=your-verified-email@yourdomain.com
+SMTP_FROM_NAME=Finlay Brewer Website
+LEAD_EMAIL=your-email@gmail.com
+```
+
+**Option 2: SMTP (Gmail/Other Providers)**
+
 ```
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
@@ -57,6 +68,8 @@ SMTP_PASS=your-gmail-app-password
 SMTP_FROM_NAME=Finlay Brewer Website
 LEAD_EMAIL=your-email@gmail.com
 ```
+
+**Note:** If both are set, SendGrid will be used automatically (more reliable on Render).
 
 ### Getting Your Database URL:
 
@@ -115,18 +128,38 @@ This is common on Render due to SMTP port restrictions. Try these solutions:
 - The code automatically uses SSL when port 465 is detected
 - Update in Render: Environment → `SMTP_PORT` → `465`
 
-**Solution 2: Use a Transactional Email Service**
-- **SendGrid** (Free tier: 100 emails/day)
-  - Sign up at https://sendgrid.com
-  - Get API key from Settings → API Keys
-  - Update code to use SendGrid API (requires code changes)
-  
-- **Mailgun** (Free tier: 5,000 emails/month)
-  - Sign up at https://mailgun.com
-  - Use SMTP settings provided by Mailgun
-  
-- **AWS SES** (Very cheap, pay per email)
-  - More complex setup but very reliable
+**Solution 2: Use SendGrid (Recommended - Already Integrated!)**
+
+SendGrid is now built into the code! Just set up an account:
+
+1. **Sign up for SendGrid** (Free tier: 100 emails/day)
+   - Go to https://sendgrid.com
+   - Create a free account
+   - Verify your email address
+
+2. **Create an API Key**
+   - Go to Settings → API Keys
+   - Click "Create API Key"
+   - Name it (e.g., "Render Production")
+   - Select "Full Access" or "Restricted Access" with Mail Send permissions
+   - Copy the API key (you'll only see it once!)
+
+3. **Verify Sender Email** (Required)
+   - Go to Settings → Sender Authentication
+   - Click "Verify a Single Sender"
+   - Enter your email and complete verification
+   - This email will be used as the "from" address
+
+4. **Add Environment Variables in Render**
+   - `SENDGRID_API_KEY` = Your API key (starts with `SG.`)
+   - `SENDGRID_FROM_EMAIL` = Your verified sender email
+   - `LEAD_EMAIL` = Where you want to receive notifications
+   - `SMTP_FROM_NAME` = "Finlay Brewer Website" (optional)
+
+5. **Remove SMTP Variables** (optional)
+   - You can remove `SMTP_USER`, `SMTP_PASS`, `SMTP_HOST`, `SMTP_PORT` if using SendGrid
+
+That's it! The code will automatically use SendGrid when `SENDGRID_API_KEY` is set.
 
 **Solution 3: Verify SMTP Settings**
 - Verify SMTP credentials are correct
@@ -148,14 +181,16 @@ This is common on Render due to SMTP port restrictions. Try these solutions:
 |----------|----------|-------------|---------|
 | `DATABASE_URL` | Yes | PostgreSQL connection string | `postgres://user:pass@host:5432/db` |
 | `PORT` | Yes | Server port (Render sets this automatically) | `10000` |
-| `SMTP_HOST` | No* | SMTP server hostname | `smtp.gmail.com` |
-| `SMTP_PORT` | No* | SMTP server port | `587` |
-| `SMTP_USER` | No* | SMTP username/email | `your-email@gmail.com` |
-| `SMTP_PASS` | No* | SMTP password/app password | `your-app-password` |
+| `SENDGRID_API_KEY` | No* | SendGrid API key (preferred) | `SG.xxxxx` |
+| `SENDGRID_FROM_EMAIL` | No* | Verified sender email (SendGrid) | `your-email@domain.com` |
+| `SMTP_HOST` | No* | SMTP server hostname (if not using SendGrid) | `smtp.gmail.com` |
+| `SMTP_PORT` | No* | SMTP server port (if not using SendGrid) | `587` |
+| `SMTP_USER` | No* | SMTP username/email (if not using SendGrid) | `your-email@gmail.com` |
+| `SMTP_PASS` | No* | SMTP password/app password (if not using SendGrid) | `your-app-password` |
 | `SMTP_FROM_NAME` | No | Email sender name | `Finlay Brewer Website` |
 | `LEAD_EMAIL` | No* | Email to receive lead notifications | `your-email@gmail.com` |
 
-*Required if you want email notifications to work
+*Required if you want email notifications to work. SendGrid is recommended for Render.
 
 ## Database Schema
 

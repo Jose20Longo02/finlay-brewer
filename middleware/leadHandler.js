@@ -1,51 +1,86 @@
 // Lead Handler - Processes and stores form submissions
 const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
 const { query } = require('../config/database');
 
 class LeadHandler {
     constructor() {
+        this.emailMethod = this.determineEmailMethod();
         this.initEmailTransporter();
     }
 
-    initEmailTransporter() {
-        // Email configuration from environment variables
-        // For Gmail: Use App Password (not regular password)
-        // For other providers: Adjust settings accordingly
-        
-        const smtpPort = parseInt(process.env.SMTP_PORT || '587');
-        const useSecure = smtpPort === 465;
-        
-        this.transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST || 'smtp.gmail.com',
-            port: smtpPort,
-            secure: useSecure, // true for 465, false for other ports
-            auth: {
-                user: process.env.SMTP_USER,
-                pass: process.env.SMTP_PASS
-            },
-            // Connection timeout settings for Render/cloud environments
-            connectionTimeout: 10000, // 10 seconds
-            greetingTimeout: 10000, // 10 seconds
-            socketTimeout: 10000, // 10 seconds
-            // Retry settings
-            pool: true,
-            maxConnections: 1,
-            maxMessages: 3
-        });
-
-        // Verify email configuration (non-blocking, don't fail if email is down)
+    determineEmailMethod() {
+        // Prefer SendGrid if API key is provided (more reliable on cloud platforms)
+        if (process.env.SENDGRID_API_KEY) {
+            return 'sendgrid';
+        }
+        // Fall back to SMTP if credentials are provided
         if (process.env.SMTP_USER && process.env.SMTP_PASS) {
-            // Don't block startup if email verification fails
-            this.transporter.verify((error, success) => {
-                if (error) {
-                    console.warn('Email configuration warning (emails may still work):', error.message);
-                    console.warn('Tip: Try using port 465 with SSL, or check if SMTP ports are accessible from Render');
-                } else {
-                    console.log('Email server is ready to send messages');
-                }
+            return 'smtp';
+        }
+        return 'none';
+    }
+
+    initEmailTransporter() {
+        if (this.emailMethod === 'sendgrid') {
+            // Initialize SendGrid
+            sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+            console.log('Email method: SendGrid (API)');
+        } else if (this.emailMethod === 'smtp') {
+            // Initialize SMTP transporter
+            const smtpPort = parseInt(process.env.SMTP_PORT || '587');
+            const useSecure = smtpPort === 465;
+            
+            // Enhanced SMTP configuration for cloud platforms like Render
+            this.transporter = nodemailer.createTransport({
+                host: process.env.SMTP_HOST || 'smtp.gmail.com',
+                port: smtpPort,
+                secure: useSecure, // true for 465, false for other ports
+                auth: {
+                    user: process.env.SMTP_USER,
+                    pass: process.env.SMTP_PASS
+                },
+                // Increased timeouts for cloud environments
+                connectionTimeout: 30000, // 30 seconds (increased from 10)
+                greetingTimeout: 30000, // 30 seconds (increased from 10)
+                socketTimeout: 30000, // 30 seconds (increased from 10)
+                // Disable pooling - create new connection each time (more reliable on cloud)
+                pool: false,
+                // TLS options for better compatibility
+                tls: {
+                    // Don't fail on invalid certificates (needed for some cloud environments)
+                    rejectUnauthorized: false,
+                    // Use modern TLS
+                    minVersion: 'TLSv1.2'
+                },
+                // Require TLS for port 587
+                requireTLS: !useSecure && smtpPort === 587,
+                // Debug mode (set to true for troubleshooting)
+                debug: process.env.SMTP_DEBUG === 'true',
+                logger: process.env.SMTP_DEBUG === 'true'
             });
+
+            // Verify email configuration (non-blocking, don't fail if email is down)
+            // Use a longer timeout for verification
+            const verifyPromise = this.transporter.verify();
+            const verifyTimeout = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('Verification timeout')), 30000);
+            });
+            
+            Promise.race([verifyPromise, verifyTimeout])
+                .then(() => {
+                    console.log('Email method: SMTP - Server is ready to send messages');
+                })
+                .catch((error) => {
+                    console.warn('SMTP verification warning (emails may still work):', error.message);
+                    console.warn('Configuration:', {
+                        host: process.env.SMTP_HOST || 'smtp.gmail.com',
+                        port: parseInt(process.env.SMTP_PORT || '587'),
+                        user: process.env.SMTP_USER ? '***configured***' : 'not set'
+                    });
+                });
         } else {
-            console.warn('Email not configured. Set SMTP_USER and SMTP_PASS in .env file');
+            console.warn('Email not configured. Set either SENDGRID_API_KEY or SMTP_USER/SMTP_PASS');
         }
     }
 
@@ -108,12 +143,12 @@ class LeadHandler {
     }
 
     async sendEmailNotification(leadData) {
-        if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+        if (this.emailMethod === 'none') {
             console.warn('Email not configured, skipping email notification');
             return false;
         }
 
-        const recipientEmail = process.env.LEAD_EMAIL || process.env.SMTP_USER;
+        const recipientEmail = process.env.LEAD_EMAIL || process.env.SMTP_USER || process.env.SENDGRID_FROM_EMAIL;
         const isPropertyInquiry = leadData.property !== undefined;
 
         const subject = isPropertyInquiry
@@ -121,34 +156,89 @@ class LeadHandler {
             : 'New Contact Form Submission - Finlay Brewer International';
 
         const emailBody = this.formatEmailBody(leadData, isPropertyInquiry);
+        const emailText = this.formatEmailText(leadData, isPropertyInquiry);
 
         try {
-            // Set a timeout for email sending to prevent hanging
-            const emailPromise = this.transporter.sendMail({
-                from: `"${process.env.SMTP_FROM_NAME || 'Finlay Brewer Website'}" <${process.env.SMTP_USER}>`,
-                to: recipientEmail,
-                replyTo: leadData.email || leadData.emailAddress,
-                subject: subject,
-                html: emailBody,
-                text: this.formatEmailText(leadData, isPropertyInquiry)
-            });
+            if (this.emailMethod === 'sendgrid') {
+                // Use SendGrid API
+                const fromEmail = process.env.SENDGRID_FROM_EMAIL || process.env.SMTP_USER || 'noreply@finlaybrewer.com';
+                const fromName = process.env.SMTP_FROM_NAME || 'Finlay Brewer Website';
 
-            // Add timeout wrapper (15 seconds max)
-            const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => reject(new Error('Email send timeout')), 15000);
-            });
+                const msg = {
+                    to: recipientEmail,
+                    from: {
+                        email: fromEmail,
+                        name: fromName
+                    },
+                    replyTo: leadData.email || leadData.emailAddress,
+                    subject: subject,
+                    html: emailBody,
+                    text: emailText
+                };
 
-            const info = await Promise.race([emailPromise, timeoutPromise]);
+                await sgMail.send(msg);
+                console.log('Email sent via SendGrid');
+                return true;
+            } else {
+                // Use SMTP with retry logic
+                const fromEmail = process.env.SMTP_USER;
+                const fromName = process.env.SMTP_FROM_NAME || 'Finlay Brewer Website';
 
-            console.log('Email sent:', info.messageId);
-            return true;
+                // Retry logic for SMTP (up to 3 attempts)
+                let lastError;
+                const maxRetries = 3;
+                
+                for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                    try {
+                        console.log(`SMTP send attempt ${attempt} of ${maxRetries}...`);
+                        
+                        // Create email promise
+                        const emailPromise = this.transporter.sendMail({
+                            from: `"${fromName}" <${fromEmail}>`,
+                            to: recipientEmail,
+                            replyTo: leadData.email || leadData.emailAddress,
+                            subject: subject,
+                            html: emailBody,
+                            text: emailText
+                        });
+
+                        // Extended timeout (45 seconds) for cloud environments
+                        const timeoutPromise = new Promise((_, reject) => {
+                            setTimeout(() => reject(new Error('Email send timeout after 45 seconds')), 45000);
+                        });
+
+                        const info = await Promise.race([emailPromise, timeoutPromise]);
+
+                        console.log(`Email sent via SMTP (attempt ${attempt}):`, info.messageId);
+                        return true;
+                    } catch (error) {
+                        lastError = error;
+                        console.warn(`SMTP attempt ${attempt} failed:`, error.message);
+                        
+                        // If not the last attempt, wait before retrying
+                        if (attempt < maxRetries) {
+                            const waitTime = attempt * 2000; // 2s, 4s, 6s
+                            console.log(`Waiting ${waitTime}ms before retry...`);
+                            await new Promise(resolve => setTimeout(resolve, waitTime));
+                        }
+                    }
+                }
+                
+                // All retries failed
+                throw lastError;
+            }
         } catch (error) {
             // Log error but don't throw - lead is already saved
             console.error('Error sending email notification:', error.message);
             console.error('Lead was saved successfully, but email notification failed.');
-            console.error('This is often due to SMTP port restrictions on Render. Consider:');
-            console.error('1. Using port 465 with SSL (set SMTP_PORT=465)');
-            console.error('2. Using a transactional email service (SendGrid, Mailgun, etc.)');
+            
+            if (this.emailMethod === 'smtp') {
+                console.error('SMTP connection failed. This is often due to port restrictions on Render.');
+                console.error('Recommended: Use SendGrid instead (set SENDGRID_API_KEY environment variable)');
+            } else {
+                console.error('SendGrid error. Check your API key and from email address.');
+            }
+            
             return false;
         }
     }
