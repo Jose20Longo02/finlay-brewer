@@ -606,6 +606,11 @@ class HeroCarousel {
     }
     
     resumeAutoplay() {
+        // Clear any existing interval first
+        if (this.autoplayInterval) {
+            clearInterval(this.autoplayInterval);
+            this.autoplayInterval = null;
+        }
         this.isPaused = false;
         this.startAutoplay();
     }
@@ -632,24 +637,30 @@ class HeroCarousel {
         this.isCarouselHovered = false;
         
         // Listen for modal close event to resume autoplay and remove focus
+        // Listen on both modal and document to catch the event reliably
         const modal = document.getElementById('propertyModal');
-        if (modal) {
-            modal.addEventListener('propertyModalClosed', () => {
-                // Remove focus from the clicked card
-                if (this.lastClickedCard && typeof this.lastClickedCard.blur === 'function') {
-                    this.lastClickedCard.blur();
+        const handleModalClose = () => {
+            // Remove focus from the clicked card
+            if (this.lastClickedCard && typeof this.lastClickedCard.blur === 'function') {
+                this.lastClickedCard.blur();
+            }
+            this.lastClickedCard = null;
+            
+            // Resume autoplay after a short delay when modal closes
+            // Only resume if not hovering over carousel and modal is actually closed
+            setTimeout(() => {
+                const isModalOpen = modal && modal.classList.contains('open');
+                if (!isModalOpen && !this.isCarouselHovered) {
+                    this.resumeAutoplay();
                 }
-                this.lastClickedCard = null;
-                
-                // Resume autoplay after a short delay when modal closes
-                // Only resume if not hovering over carousel
-                setTimeout(() => {
-                    if (!this.isCarouselHovered) {
-                        this.resumeAutoplay();
-                    }
-                }, 500);
-            });
+            }, 300);
+        };
+        
+        if (modal) {
+            modal.addEventListener('propertyModalClosed', handleModalClose);
         }
+        // Also listen on document to catch the event if it bubbles
+        document.addEventListener('propertyModalClosed', handleModalClose);
         
         // Pause autoplay on carousel hover, resume when mouse leaves
         const carousel = document.getElementById('heroCarousel');

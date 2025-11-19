@@ -136,11 +136,14 @@ class PropertyModal {
         }
         
         // Dispatch custom event to notify that modal is closed
+        // Dispatch on both modal and document to ensure it's caught
         const closeEvent = new CustomEvent('propertyModalClosed', {
             bubbles: true,
-            cancelable: false
+            cancelable: false,
+            detail: { modal: this.modal }
         });
         this.modal.dispatchEvent(closeEvent);
+        document.dispatchEvent(closeEvent); // Also dispatch on document for better event propagation
     }
 
     populateDetails(property) {
