@@ -2727,6 +2727,58 @@ textarea:focus {
     box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
 }
 
+.form-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-charcoal);
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+.radio-group {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    color: var(--text-charcoal);
+    user-select: none;
+}
+
+.radio-label input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--text-charcoal);
+    flex-shrink: 0;
+}
+
+.radio-label span {
+    line-height: 1.5;
+}
+
+.radio-label:hover {
+    color: var(--text-charcoal-light);
+}
+
+/* Property modal form radio styles */
+.property-modal__form .form-label {
+    margin-bottom: 0.75rem;
+}
+
+.property-modal__form .radio-group {
+    margin-top: 0.5rem;
+}
+
 #submitButton {
     grid-column: 1 / -1;
     justify-self: center;

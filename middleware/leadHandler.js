@@ -126,6 +126,7 @@ class LeadHandler {
                 phone_full: leadData.phoneFull || null,
                 property: leadData.property || null,
                 message: leadData.message || null,
+                best_time_to_contact: leadData.bestTimeToContact || null,
                 lead_data: leadData // Store full data as JSONB for flexibility
             };
 
@@ -134,8 +135,8 @@ class LeadHandler {
                 `INSERT INTO leads (
                     first_name, last_name, name, email, email_address,
                     phone, phone_number, country_code, phone_full,
-                    property, message, lead_data
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+                    property, message, best_time_to_contact, lead_data
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
                 RETURNING id, timestamp, created_at`,
                 [
                     insertData.first_name,
@@ -149,6 +150,7 @@ class LeadHandler {
                     insertData.phone_full,
                     insertData.property,
                     insertData.message,
+                    insertData.best_time_to_contact,
                     JSON.stringify(insertData.lead_data)
                 ]
             );
@@ -398,6 +400,11 @@ class LeadHandler {
             } else if (leadData.phone) {
                 fields['Phone'] = leadData.phone;
             }
+            
+            // Add best time to contact
+            if (leadData.bestTimeToContact) {
+                fields['Best Time to Contact'] = leadData.bestTimeToContact;
+            }
         } else {
             // Contact form - combine country code and phone
             fields = {
@@ -414,6 +421,11 @@ class LeadHandler {
                 fields['Full Phone'] = `${leadData.countryCode} ${leadData.phoneNumber}`.trim();
             } else if (leadData.phoneNumber) {
                 fields['Phone'] = leadData.phoneNumber;
+            }
+            
+            // Add best time to contact
+            if (leadData.bestTimeToContact) {
+                fields['Best Time to Contact'] = leadData.bestTimeToContact;
             }
         }
 

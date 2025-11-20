@@ -53,9 +53,23 @@ const initDatabase = async () => {
         phone_full VARCHAR(255),
         property VARCHAR(500),
         message TEXT,
+        best_time_to_contact VARCHAR(50),
         lead_data JSONB,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
+    `);
+    
+    // Add best_time_to_contact column if it doesn't exist (for existing databases)
+    await query(`
+      DO $$ 
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_name = 'leads' AND column_name = 'best_time_to_contact'
+        ) THEN
+          ALTER TABLE leads ADD COLUMN best_time_to_contact VARCHAR(50);
+        END IF;
+      END $$;
     `);
 
     // Create index on email for faster lookups

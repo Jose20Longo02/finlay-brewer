@@ -229,6 +229,21 @@
                     </div>
                 </div>
                 <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="bestTimeToContact" class="form-label">Best time to contact you:</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" id="bestTimeMorning" name="bestTimeToContact" value="morning time" required>
+                                <span>Morning time</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" id="bestTimeAfternoon" name="bestTimeToContact" value="afternoon time" required>
+                                <span>Afternoon time</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
                     <button type="submit" id="submitButton" class="submit-button">Submit</button>
                 </div>
             </form>
@@ -292,6 +307,19 @@
                         <div class="field">
                             <label for="propertyInquiryMessage">Message</label>
                             <textarea id="propertyInquiryMessage" name="message" placeholder="Tell us about your plans" required></textarea>
+                        </div>
+                        <div class="field">
+                            <label for="propertyInquiryBestTime" class="form-label">Best time to contact you:</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" id="propertyInquiryBestTimeMorning" name="bestTimeToContact" value="morning time" required>
+                                    <span>Morning time</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" id="propertyInquiryBestTimeAfternoon" name="bestTimeToContact" value="afternoon time" required>
+                                    <span>Afternoon time</span>
+                                </label>
+                            </div>
                         </div>
                         <button type="submit" id="propertyInquirySubmit" class="property-modal__submit">Send Inquiry</button>
                     </form>

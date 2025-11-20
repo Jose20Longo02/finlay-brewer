@@ -42,13 +42,15 @@ class FormHandler {
             }
             
             // Collect form data
+            const bestTimeToContact = document.querySelector('input[name="bestTimeToContact"]:checked')?.value || '';
             const formData = {
                 firstName: document.getElementById('firstName').value,
                 lastName: document.getElementById('lastName').value,
                 countryCode: document.getElementById('countryCode').value,
                 phoneNumber: document.getElementById('phoneNumber').value,
                 emailAddress: document.getElementById('emailAddress').value,
-                message: document.getElementById('message').value
+                message: document.getElementById('message').value,
+                bestTimeToContact: bestTimeToContact
             };
             
             try {
@@ -203,6 +205,9 @@ class FormHandler {
                 ? `${countryCode} ${phoneNumber}`.trim()
                 : phoneNumber || countryCode;
 
+            // Get best time to contact
+            const bestTimeToContact = this.propertyInquiryForm?.querySelector('input[name="bestTimeToContact"]:checked')?.value || '';
+            
             const formData = {
                 name: this.propertyInquiryName?.value || '',
                 email: this.propertyInquiryEmail?.value || '',
@@ -210,7 +215,8 @@ class FormHandler {
                 phone: phoneNumber,
                 phoneFull: fullPhone,
                 message: this.propertyInquiryMessage?.value || '',
-                property: this.propertyInquiryProperty?.value || ''
+                property: this.propertyInquiryProperty?.value || '',
+                bestTimeToContact: bestTimeToContact
             };
             
             try {
