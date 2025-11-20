@@ -42,7 +42,7 @@ class FormHandler {
             }
             
             // Collect form data
-            const bestTimeToContact = document.querySelector('input[name="bestTimeToContact"]:checked')?.value || '';
+            const bestTimeToContact = document.getElementById('bestTimeToContact')?.value || '';
             const formData = {
                 firstName: document.getElementById('firstName').value,
                 lastName: document.getElementById('lastName').value,
@@ -122,8 +122,8 @@ class FormHandler {
     
     setupInputValidation() {
         const inputs = [
-            ...(this.contactForm ? Array.from(this.contactForm.querySelectorAll('input, textarea')) : []),
-            ...(this.propertyInquiryForm ? Array.from(this.propertyInquiryForm.querySelectorAll('input, textarea')) : [])
+            ...(this.contactForm ? Array.from(this.contactForm.querySelectorAll('input, textarea, select')) : []),
+            ...(this.propertyInquiryForm ? Array.from(this.propertyInquiryForm.querySelectorAll('input, textarea, select')) : [])
         ];
         
         inputs.forEach((input) => {
@@ -131,8 +131,9 @@ class FormHandler {
                 this.validateInput(input);
             });
             
-            input.addEventListener('input', () => {
-                // Clear error state on input
+            const eventType = input.tagName === 'SELECT' ? 'change' : 'input';
+            input.addEventListener(eventType, () => {
+                // Clear error state on input/change
                 if (input.style.borderColor === 'rgb(220, 53, 69)') {
                     input.style.borderColor = '';
                 }
@@ -147,6 +148,7 @@ class FormHandler {
         const phoneNumber = document.getElementById('phoneNumber');
         const emailAddress = document.getElementById('emailAddress');
         const message = document.getElementById('message');
+        const bestTimeToContact = document.getElementById('bestTimeToContact');
         
         let isValid = true;
         
@@ -180,6 +182,13 @@ class FormHandler {
             isValid = false;
         }
         
+        if (!bestTimeToContact || !bestTimeToContact.value) {
+            if (bestTimeToContact) {
+                this.showInputError(bestTimeToContact);
+            }
+            isValid = false;
+        }
+        
         return isValid;
     }
     
@@ -206,7 +215,7 @@ class FormHandler {
                 : phoneNumber || countryCode;
 
             // Get best time to contact
-            const bestTimeToContact = this.propertyInquiryForm?.querySelector('input[name="bestTimeToContact"]:checked')?.value || '';
+            const bestTimeToContact = document.getElementById('propertyInquiryBestTime')?.value || '';
             
             const formData = {
                 name: this.propertyInquiryName?.value || '',
@@ -258,6 +267,7 @@ class FormHandler {
     }
     
     validatePropertyInquiryForm() {
+        const bestTimeToContact = document.getElementById('propertyInquiryBestTime');
         let isValid = true;
         
         if (!this.propertyInquiryName?.value.trim()) {
@@ -282,6 +292,13 @@ class FormHandler {
         
         if (!this.propertyInquiryMessage?.value.trim()) {
             this.showInputError(this.propertyInquiryMessage);
+            isValid = false;
+        }
+        
+        if (!bestTimeToContact || !bestTimeToContact.value) {
+            if (bestTimeToContact) {
+                this.showInputError(bestTimeToContact);
+            }
             isValid = false;
         }
         

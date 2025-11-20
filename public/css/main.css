@@ -1918,7 +1918,8 @@ body.modal-open {
 }
 
 .property-modal__form input,
-.property-modal__form textarea {
+.property-modal__form textarea,
+.property-modal__form select {
     width: 100%;
     border-radius: 12px;
     border: 1px solid rgba(190, 198, 214, 0.7);
@@ -1929,10 +1930,27 @@ body.modal-open {
     color: var(--text-charcoal);
     transition: border-color var(--transition-normal) var(--easing),
                 box-shadow var(--transition-normal) var(--easing);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+}
+
+.property-modal__form select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23303030' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 12px;
+    padding-right: 2.5rem;
+}
+
+.property-modal__form textarea {
+    cursor: text;
 }
 
 .property-modal__form input:focus,
-.property-modal__form textarea:focus {
+.property-modal__form textarea:focus,
+.property-modal__form select:focus {
     outline: none;
     border-color: rgba(58, 80, 120, 0.65);
     box-shadow: 0 0 0 4px rgba(75, 110, 170, 0.14);
@@ -2701,7 +2719,8 @@ textarea:focus {
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
     width: 100%;
     padding: 0.9rem 1rem;
     border-radius: 14px;
@@ -2711,6 +2730,18 @@ textarea:focus {
     font-size: 0.95rem;
     color: var(--text-charcoal);
     transition: box-shadow var(--transition-normal) var(--easing), background var(--transition-normal) var(--easing);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+}
+
+.form-group select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23303030' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 12px;
+    padding-right: 2.5rem;
 }
 
 .form-group textarea {
@@ -2718,10 +2749,12 @@ textarea:focus {
     padding: 1.15rem;
     min-height: 150px;
     resize: vertical;
+    cursor: text;
 }
 
 .form-group input:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group select:focus {
     outline: none;
     background: #eef0f2;
     box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
@@ -2734,49 +2767,6 @@ textarea:focus {
     color: var(--text-charcoal);
     margin-bottom: 0.75rem;
     display: block;
-}
-
-.radio-group {
-    display: flex;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-}
-
-.radio-label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.95rem;
-    color: var(--text-charcoal);
-    user-select: none;
-}
-
-.radio-label input[type="radio"] {
-    width: 18px;
-    height: 18px;
-    margin: 0;
-    cursor: pointer;
-    accent-color: var(--text-charcoal);
-    flex-shrink: 0;
-}
-
-.radio-label span {
-    line-height: 1.5;
-}
-
-.radio-label:hover {
-    color: var(--text-charcoal-light);
-}
-
-/* Property modal form radio styles */
-.property-modal__form .form-label {
-    margin-bottom: 0.75rem;
-}
-
-.property-modal__form .radio-group {
-    margin-top: 0.5rem;
 }
 
 #submitButton {
