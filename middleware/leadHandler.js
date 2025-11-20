@@ -322,6 +322,16 @@ class LeadHandler {
             } else if (leadData.phoneNumber) {
                 fields['Phone'] = leadData.phoneNumber;
             }
+            
+            // Add best time to contact
+            if (leadData.bestTimeToContact) {
+                fields['Best Time to Contact'] = leadData.bestTimeToContact;
+            }
+            
+            // Add budget range
+            if (leadData.budgetRange) {
+                fields['Budget Range'] = leadData.budgetRange;
+            }
         }
 
         let html = `
