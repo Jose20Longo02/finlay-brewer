@@ -43,6 +43,7 @@ class FormHandler {
             
             // Collect form data
             const bestTimeToContact = document.getElementById('bestTimeToContact')?.value || '';
+            const budgetRange = document.getElementById('budgetRange')?.value || '';
             const formData = {
                 firstName: document.getElementById('firstName').value,
                 lastName: document.getElementById('lastName').value,
@@ -50,7 +51,8 @@ class FormHandler {
                 phoneNumber: document.getElementById('phoneNumber').value,
                 emailAddress: document.getElementById('emailAddress').value,
                 message: document.getElementById('message').value,
-                bestTimeToContact: bestTimeToContact
+                bestTimeToContact: bestTimeToContact,
+                budgetRange: budgetRange
             };
             
             try {
@@ -149,6 +151,7 @@ class FormHandler {
         const emailAddress = document.getElementById('emailAddress');
         const message = document.getElementById('message');
         const bestTimeToContact = document.getElementById('bestTimeToContact');
+        const budgetRange = document.getElementById('budgetRange');
         
         let isValid = true;
         
@@ -185,6 +188,13 @@ class FormHandler {
         if (!bestTimeToContact || !bestTimeToContact.value) {
             if (bestTimeToContact) {
                 this.showInputError(bestTimeToContact);
+            }
+            isValid = false;
+        }
+        
+        if (!budgetRange || !budgetRange.value.trim()) {
+            if (budgetRange) {
+                this.showInputError(budgetRange);
             }
             isValid = false;
         }

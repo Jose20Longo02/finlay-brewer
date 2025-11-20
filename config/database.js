@@ -54,6 +54,7 @@ const initDatabase = async () => {
         property VARCHAR(500),
         message TEXT,
         best_time_to_contact VARCHAR(50),
+        budget_range VARCHAR(255),
         lead_data JSONB,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
@@ -68,6 +69,19 @@ const initDatabase = async () => {
           WHERE table_name = 'leads' AND column_name = 'best_time_to_contact'
         ) THEN
           ALTER TABLE leads ADD COLUMN best_time_to_contact VARCHAR(50);
+        END IF;
+      END $$;
+    `);
+    
+    // Add budget_range column if it doesn't exist (for existing databases)
+    await query(`
+      DO $$ 
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_name = 'leads' AND column_name = 'budget_range'
+        ) THEN
+          ALTER TABLE leads ADD COLUMN budget_range VARCHAR(255);
         END IF;
       END $$;
     `);

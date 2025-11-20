@@ -127,6 +127,7 @@ class LeadHandler {
                 property: leadData.property || null,
                 message: leadData.message || null,
                 best_time_to_contact: leadData.bestTimeToContact || null,
+                budget_range: leadData.budgetRange || null,
                 lead_data: leadData // Store full data as JSONB for flexibility
             };
 
@@ -135,8 +136,8 @@ class LeadHandler {
                 `INSERT INTO leads (
                     first_name, last_name, name, email, email_address,
                     phone, phone_number, country_code, phone_full,
-                    property, message, best_time_to_contact, lead_data
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                    property, message, best_time_to_contact, budget_range, lead_data
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
                 RETURNING id, timestamp, created_at`,
                 [
                     insertData.first_name,
@@ -151,6 +152,7 @@ class LeadHandler {
                     insertData.property,
                     insertData.message,
                     insertData.best_time_to_contact,
+                    insertData.budget_range,
                     JSON.stringify(insertData.lead_data)
                 ]
             );
@@ -426,6 +428,11 @@ class LeadHandler {
             // Add best time to contact
             if (leadData.bestTimeToContact) {
                 fields['Best Time to Contact'] = leadData.bestTimeToContact;
+            }
+            
+            // Add budget range
+            if (leadData.budgetRange) {
+                fields['Budget Range'] = leadData.budgetRange;
             }
         }
 
