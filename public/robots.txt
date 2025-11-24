@@ -1,0 +1,11 @@
+# robots.txt for Finlay Brewer International
+
+User-agent: *
+Allow: /
+
+# Disallow admin or private areas (if any)
+# Disallow: /admin/
+
+# Sitemap location (update with your actual domain)
+Sitemap: https://www.finlaybrewerinternational.com/sitemap.xml
+

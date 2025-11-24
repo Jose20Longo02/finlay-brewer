@@ -4,7 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Finlay Brewer International - Premium properties in Nice, France. Expert guidance for international buyers.">
+    <meta name="keywords" content="Nice properties, French Riviera real estate, international property buyers, Nice apartments, Nice villas, property investment France, real estate Nice, Finlay Brewer">
+    <meta name="author" content="Finlay Brewer International">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="English">
+    <meta name="geo.region" content="FR-PAC">
+    <meta name="geo.placename" content="Nice, France">
+    
     <title><%= title %></title>
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="<%= typeof canonicalUrl !== 'undefined' ? canonicalUrl : 'https://www.finlaybrewerinternational.com/' %>">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<%= typeof canonicalUrl !== 'undefined' ? canonicalUrl : 'https://www.finlaybrewerinternational.com/' %>">
+    <meta property="og:title" content="<%= title %>">
+    <meta property="og:description" content="Premium properties in Nice, France. Expert guidance for international buyers. From seaside apartments to hilltop villas, our international team helps you buy with confidence.">
+    <meta property="og:image" content="<%= typeof canonicalUrl !== 'undefined' ? canonicalUrl : 'https://www.finlaybrewerinternational.com/' %>images/logo.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="Finlay Brewer International">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="<%= typeof canonicalUrl !== 'undefined' ? canonicalUrl : 'https://www.finlaybrewerinternational.com/' %>">
+    <meta name="twitter:title" content="<%= title %>">
+    <meta name="twitter:description" content="Premium properties in Nice, France. Expert guidance for international buyers.">
+    <meta name="twitter:image" content="<%= typeof canonicalUrl !== 'undefined' ? canonicalUrl : 'https://www.finlaybrewerinternational.com/' %>images/logo.png">
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/images/logo.png">
@@ -29,6 +57,50 @@
     
     <!-- Preload Critical Images -->
     <link rel="preload" href="/images/logo.png" as="image">
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "RealEstateAgent",
+      "name": "Finlay Brewer International",
+      "description": "Premium properties in Nice, France. Expert guidance for international buyers.",
+      "url": "https://www.finlaybrewerinternational.com/",
+      "logo": "https://www.finlaybrewerinternational.com/images/logo.png",
+      "image": "https://www.finlaybrewerinternational.com/images/logo.png",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Nice",
+        "addressRegion": "Provence-Alpes-Côte d'Azur",
+        "addressCountry": "FR"
+      },
+      "areaServed": {
+        "@type": "City",
+        "name": "Nice",
+        "containedIn": {
+          "@type": "Country",
+          "name": "France"
+        }
+      },
+      "serviceType": "Real Estate Services",
+      "knowsAbout": [
+        "Real Estate",
+        "Property Investment",
+        "International Property Buying",
+        "French Property Law",
+        "Property Management"
+      ],
+      "sameAs": [
+        "https://www.finlaybrewerinternational.com/",
+        "https://www.finlaybrewer.co.uk/"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "Customer Service",
+        "availableLanguage": ["English", "French"]
+      }
+    }
+    </script>
 </head>
 <body>
     <%- include('partials/header') %>

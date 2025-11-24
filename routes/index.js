@@ -5,8 +5,14 @@ const leadHandler = require('../middleware/leadHandler');
 
 // Home page route
 router.get('/', (req, res) => {
+  // Get the canonical URL (use the host from request or default to production URL)
+  const protocol = req.protocol || 'https';
+  const host = req.get('host') || 'www.finlaybrewerinternational.com';
+  const canonicalUrl = `${protocol}://${host}${req.path}`;
+  
   res.render('index', {
-    title: 'Finlay Brewer International - Properties in Nice, France'
+    title: 'Finlay Brewer International - Properties in Nice, France',
+    canonicalUrl: canonicalUrl
   });
 });
 
