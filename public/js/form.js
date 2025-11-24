@@ -68,6 +68,11 @@ class FormHandler {
                 const result = await response.json();
                 
                 if (result.success) {
+                    // Track conversion in Google Ads
+                    if (typeof gtag_report_conversion === 'function') {
+                        gtag_report_conversion();
+                    }
+                    
                     // Show success message
                     this.showSuccessMessage(this.contactForm, 'Thank you! We\'ll be in touch soon.');
                     this.contactForm.reset();
@@ -250,6 +255,11 @@ class FormHandler {
                 const result = await response.json();
                 
                 if (result.success) {
+                    // Track conversion in Google Ads
+                    if (typeof gtag_report_conversion === 'function') {
+                        gtag_report_conversion();
+                    }
+                    
                     this.showSuccessMessage(this.propertyInquiryForm, 'Thank you! We will reach out shortly.');
                     this.propertyInquiryForm.reset();
                     
