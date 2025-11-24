@@ -7,5 +7,5 @@ Allow: /
 # Disallow: /admin/
 
 # Sitemap location (update with your actual domain)
-Sitemap: https://www.finlaybrewerinternational.com/sitemap.xml
+Sitemap: https://www.finlay-brewer-international.com/sitemap.xml
 
