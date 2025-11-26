@@ -86,6 +86,34 @@
     <link rel="preload" href="/images/logo.png" as="image">
     
     <!-- Structured Data (JSON-LD) -->
+    <!-- Organization Schema - Required for logo in Google Search Results -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Finlay Brewer International",
+      "url": "https://www.finlay-brewer-international.com/",
+      "logo": "https://www.finlay-brewer-international.com/images/logo.png",
+      "description": "Premium properties in Nice, France. Expert guidance for international buyers.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Nice",
+        "addressRegion": "Provence-Alpes-Côte d'Azur",
+        "addressCountry": "FR"
+      },
+      "sameAs": [
+        "https://www.finlaybrewerinternational.com/",
+        "https://www.finlaybrewer.co.uk/"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "Customer Service",
+        "availableLanguage": ["English", "French"]
+      }
+    }
+    </script>
+    
+    <!-- RealEstateAgent Schema - For business-specific information -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
