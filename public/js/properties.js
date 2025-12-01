@@ -70,6 +70,29 @@ class PropertyModal {
         }
     }
 
+    /**
+     * Generate a SEO-friendly slug from a property title
+     * @param {string} title - Property title
+     * @returns {string} - URL-friendly slug
+     */
+    generateSlug(title) {
+        if (!title) return '';
+        
+        return title
+            .toLowerCase()
+            .trim()
+            // Replace common special characters with spaces
+            .replace(/[^\w\s-]/g, ' ')
+            // Replace multiple spaces/hyphens with single hyphen
+            .replace(/[\s_-]+/g, '-')
+            // Remove leading/trailing hyphens
+            .replace(/^-+|-+$/g, '')
+            // Limit to 80 characters for readability
+            .substring(0, 80)
+            // Remove trailing hyphen if cut off mid-word
+            .replace(/-+$/, '');
+    }
+
     initURLHandling() {
         // Listen for browser back/forward buttons
         window.addEventListener('popstate', this.boundPopState);
@@ -93,16 +116,17 @@ class PropertyModal {
 
     checkURLHash() {
         const hash = window.location.hash;
-        if (hash && hash.startsWith('#property-')) {
-            const propertyId = hash.substring(1); // Remove the '#'
-            this.openPropertyFromURL(propertyId);
+        // Support both old format (#property-1) and new format (#slug)
+        if (hash && hash.length > 1) {
+            const slug = hash.substring(1); // Remove the '#'
+            this.openPropertyFromURL(slug);
         } else if (this.modal && this.modal.classList.contains('open')) {
             // If there's no hash but modal is open, close it
             this.close();
         }
     }
 
-    async openPropertyFromURL(propertyId) {
+    async openPropertyFromURL(slugOrId) {
         if (!window.PropertyDataStore) {
             console.warn('PropertyDataStore is not available. Cannot open property from URL.');
             return;
@@ -110,7 +134,20 @@ class PropertyModal {
 
         try {
             const properties = await window.PropertyDataStore.getProperties();
-            const property = properties.find(p => p.id === propertyId);
+            let property = null;
+            
+            // First, try to find by ID (for backward compatibility with old URLs)
+            if (slugOrId.startsWith('property-')) {
+                property = properties.find(p => p.id === slugOrId);
+            }
+            
+            // If not found by ID, try to find by slug (match generated slug from title)
+            if (!property) {
+                property = properties.find(p => {
+                    const propertySlug = this.generateSlug(p.title);
+                    return propertySlug === slugOrId;
+                });
+            }
             
             if (property) {
                 // Open the property modal without updating URL (to avoid duplicate hash)
@@ -118,7 +155,7 @@ class PropertyModal {
                 this.open(property);
                 this.updateURLHash = true;
             } else {
-                console.warn(`Property with ID "${propertyId}" not found.`);
+                console.warn(`Property with slug/ID "${slugOrId}" not found.`);
                 // Remove invalid hash
                 if (window.history.replaceState) {
                     window.history.replaceState(null, '', window.location.pathname);
@@ -130,9 +167,12 @@ class PropertyModal {
     }
 
     updateURLForProperty(property) {
-        if (!property || !property.id) return;
+        if (!property || !property.title) return;
         
-        const newHash = `#${property.id}`;
+        const slug = this.generateSlug(property.title);
+        if (!slug) return;
+        
+        const newHash = `#${slug}`;
         const currentHash = window.location.hash;
         
         // Only update if hash is different
