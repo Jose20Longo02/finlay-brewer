@@ -27,8 +27,11 @@ class PropertyModal {
         this.property = null;
         this.focusedBeforeOpen = null;
         this.boundKeydown = this.handleKeydown.bind(this);
+        this.boundPopState = this.handlePopState.bind(this);
+        this.updateURLHash = true; // Flag to control URL updates
 
         this.initEvents();
+        this.initURLHandling();
     }
 
     initEvents() {
@@ -64,6 +67,92 @@ class PropertyModal {
                     }, 400);
                 }
             });
+        }
+    }
+
+    initURLHandling() {
+        // Listen for browser back/forward buttons
+        window.addEventListener('popstate', this.boundPopState);
+        
+        // Check URL on page load (after DOM is ready)
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                // Small delay to ensure PropertyDataStore is initialized
+                setTimeout(() => this.checkURLHash(), 100);
+            });
+        } else {
+            // DOM already loaded, small delay to ensure PropertyDataStore is initialized
+            setTimeout(() => this.checkURLHash(), 100);
+        }
+    }
+
+    handlePopState(event) {
+        // When user navigates back/forward, check if we need to open/close modal
+        this.checkURLHash();
+    }
+
+    checkURLHash() {
+        const hash = window.location.hash;
+        if (hash && hash.startsWith('#property-')) {
+            const propertyId = hash.substring(1); // Remove the '#'
+            this.openPropertyFromURL(propertyId);
+        } else if (this.modal && this.modal.classList.contains('open')) {
+            // If there's no hash but modal is open, close it
+            this.close();
+        }
+    }
+
+    async openPropertyFromURL(propertyId) {
+        if (!window.PropertyDataStore) {
+            console.warn('PropertyDataStore is not available. Cannot open property from URL.');
+            return;
+        }
+
+        try {
+            const properties = await window.PropertyDataStore.getProperties();
+            const property = properties.find(p => p.id === propertyId);
+            
+            if (property) {
+                // Open the property modal without updating URL (to avoid duplicate hash)
+                this.updateURLHash = false;
+                this.open(property);
+                this.updateURLHash = true;
+            } else {
+                console.warn(`Property with ID "${propertyId}" not found.`);
+                // Remove invalid hash
+                if (window.history.replaceState) {
+                    window.history.replaceState(null, '', window.location.pathname);
+                }
+            }
+        } catch (error) {
+            console.error('Error loading property from URL:', error);
+        }
+    }
+
+    updateURLForProperty(property) {
+        if (!property || !property.id) return;
+        
+        const newHash = `#${property.id}`;
+        const currentHash = window.location.hash;
+        
+        // Only update if hash is different
+        if (currentHash !== newHash) {
+            if (window.history.pushState) {
+                window.history.pushState(null, '', newHash);
+            } else {
+                // Fallback for older browsers
+                window.location.hash = newHash;
+            }
+        }
+    }
+
+    clearURLHash() {
+        // Remove hash from URL without triggering page reload
+        if (window.history.replaceState) {
+            window.history.replaceState(null, '', window.location.pathname + window.location.search);
+        } else {
+            // Fallback for older browsers
+            window.location.hash = '';
         }
     }
 
@@ -110,6 +199,11 @@ class PropertyModal {
         } else if (this.closeControls[0]) {
             this.closeControls[0].focus();
         }
+
+        // Update URL hash if enabled
+        if (this.updateURLHash) {
+            this.updateURLForProperty(property);
+        }
     }
 
     close() {
@@ -135,6 +229,11 @@ class PropertyModal {
             this.focusedBeforeOpen.focus();
         }
         
+        // Clear URL hash when closing modal
+        if (this.updateURLHash) {
+            this.clearURLHash();
+        }
+
         // Dispatch custom event to notify that modal is closed
         // Dispatch on both modal and document to ensure it's caught
         const closeEvent = new CustomEvent('propertyModalClosed', {

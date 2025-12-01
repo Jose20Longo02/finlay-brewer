@@ -156,3 +156,4 @@ Si después de 2 meses el logo aún no aparece:
 - [ ] robots.txt no bloquea el logo
 - [ ] Esperando 2-4 semanas mínimo
 
+
