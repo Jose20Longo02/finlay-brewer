@@ -2,15 +2,23 @@
 
 ## ✅ Implemented
 
-Each property now has a unique URL that can be shared. When someone opens the link, the site will automatically open with that property's modal displayed.
+Each property now has a unique, SEO-friendly URL that can be shared. When someone opens the link, the site will automatically open with that property's modal displayed.
 
 ## How It Works
 
 ### URL Format
-- **Format:** `https://www.finlay-brewer-international.com/#property-1`
-- **Example:** `https://www.finlay-brewer-international.com/#property-5`
+- **Format:** `https://www.finlay-brewer-international.com/#property-slug`
+- **Example:** `https://www.finlay-brewer-international.com/#mediterranean-masterpiece-in-the-heart-of-nice`
+- **Example:** `https://www.finlay-brewer-international.com/#12-units-building-near-promenade-des-anglais`
 
-The property ID (e.g., `property-1`, `property-5`) comes from the `id` field in `public/data/properties.json`.
+The slug is automatically generated from the property title, making URLs readable and SEO-friendly. For example:
+- "Mediterranean Masterpiece in the Heart of Nice" → `#mediterranean-masterpiece-in-the-heart-of-nice`
+- "12 Units Building Near Promenade des Anglais" → `#12-units-building-near-promenade-des-anglais`
+- "3 Bedroom Apartment with Panoramic View" → `#3-bedroom-apartment-with-panoramic-view`
+
+### Backward Compatibility
+- Old format URLs (`#property-1`, `#property-2`) still work for backward compatibility
+- New URLs use SEO-friendly slugs based on property titles
 
 ### Automatic Behavior
 
@@ -38,11 +46,16 @@ The property ID (e.g., `property-1`, `property-5`) comes from the `id` field in 
 3. Copy the URL and share it
 
 ### Method 2: Manual URL Construction
-1. Find the property ID in `public/data/properties.json`
-2. Construct the URL: `https://www.finlay-brewer-international.com/#[property-id]`
-3. Example: For property with `id: "property-1"`, the URL is:
+1. Find the property title in `public/data/properties.json`
+2. Convert the title to a slug:
+   - Lowercase
+   - Replace spaces with hyphens
+   - Remove special characters
+   - Limit to 80 characters
+3. Construct the URL: `https://www.finlay-brewer-international.com/#[slug]`
+4. Example: For property with title "Mediterranean Masterpiece in the Heart of Nice", the URL is:
    ```
-   https://www.finlay-brewer-international.com/#property-1
+   https://www.finlay-brewer-international.com/#mediterranean-masterpiece-in-the-heart-of-nice
    ```
 
 ## Technical Details
@@ -53,10 +66,20 @@ The property ID (e.g., `property-1`, `property-5`) comes from the `id` field in 
 - Listens for `popstate` events to handle browser back/forward buttons
 - Automatically checks URL hash on page load
 
-### Property IDs
-- Property IDs are defined in `public/data/properties.json`
-- Each property must have a unique `id` field
-- Format: `"property-1"`, `"property-2"`, etc.
+### Slug Generation
+- Slugs are automatically generated from property titles
+- Process:
+  1. Convert to lowercase
+  2. Remove special characters
+  3. Replace spaces with hyphens
+  4. Limit to 80 characters for readability
+  5. Remove leading/trailing hyphens
+- Example: "Mediterranean Masterpiece in the Heart of Nice" → `mediterranean-masterpiece-in-the-heart-of-nice`
+
+### Property Matching
+- Properties are matched by slug (generated from title)
+- Old format URLs (`#property-1`) are still supported for backward compatibility
+- If a slug matches multiple properties (unlikely), the first match is used
 
 ### Browser Compatibility
 - Works in all modern browsers
@@ -65,9 +88,15 @@ The property ID (e.g., `property-1`, `property-5`) comes from the `id` field in 
 ## Example URLs
 
 ```
+https://www.finlay-brewer-international.com/#mediterranean-masterpiece-in-the-heart-of-nice
+https://www.finlay-brewer-international.com/#12-units-building-near-promenade-des-anglais
+https://www.finlay-brewer-international.com/#3-bedroom-apartment-with-panoramic-view
+```
+
+### Old Format (Still Supported)
+```
 https://www.finlay-brewer-international.com/#property-1
 https://www.finlay-brewer-international.com/#property-2
-https://www.finlay-brewer-international.com/#property-3
 ```
 
 ## Use Cases
