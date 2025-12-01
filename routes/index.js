@@ -10,6 +10,14 @@ router.get('/', (req, res) => {
   const host = req.get('host') || 'www.finlaybrewerinternational.com';
   const canonicalUrl = `${protocol}://${host}${req.path}`;
   
+  // Set performance headers
+  res.set({
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'X-XSS-Protection': '1; mode=block',
+    'Referrer-Policy': 'strict-origin-when-cross-origin'
+  });
+  
   res.render('index', {
     title: 'Finlay Brewer International - Properties in Nice, France',
     canonicalUrl: canonicalUrl
@@ -46,6 +54,12 @@ router.post('/submit-lead', async (req, res) => {
 
     // Process the lead (save + send email)
     const result = await leadHandler.processLead(leadData);
+
+    // Set JSON response headers for better compression
+    res.set({
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'no-cache, no-store, must-revalidate'
+    });
 
     res.json({
       success: true,

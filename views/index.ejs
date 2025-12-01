@@ -1,33 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16667558265"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'AW-16667558265');
-      
-      // Event snippet for Vista de página conversion page
-      gtag('event', 'conversion', {'send_to': 'AW-16667558265/UzlACOet-MoZEPmC24s-'});
-      
-      // Event snippet for Form submission conversion
-      // Call gtag_report_conversion when someone submits a form
-      function gtag_report_conversion(url) {
-        var callback = function () {
-          if (typeof(url) != 'undefined') {
-            window.location = url;
-          }
-        };
-        gtag('event', 'conversion', {
-          'send_to': 'AW-16667558265/UzlACOet-MoZEPmC24s-',
-          'event_callback': callback
-        });
-        return false;
-      }
-    </script>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Finlay Brewer International - Premium properties in Nice, France. Expert guidance for international buyers.">
@@ -69,11 +42,17 @@
     <!-- Resource Hints for Performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.googletagmanager.com">
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
     
     <!-- Preload Critical CSS -->
     <link rel="preload" href="/css/main.css" as="style">
+    
+    <!-- Preload Critical JavaScript -->
+    <link rel="preload" href="/js/dataStore.js" as="script">
+    <link rel="preload" href="/js/main.js" as="script">
     
     <!-- Optimized Font Loading -->
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;600;700&family=Inter:wght@200;300;400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -82,8 +61,8 @@
     <!-- Critical CSS -->
     <link rel="stylesheet" href="/css/main.css">
     
-    <!-- Preload Critical Images -->
-    <link rel="preload" href="/images/logo.png" as="image">
+    <!-- Preload Critical Images with fetchpriority -->
+    <link rel="preload" href="/images/logo.png" as="image" fetchpriority="high">
     
     <!-- Structured Data (JSON-LD) -->
     <!-- Organization Schema - Required for logo in Google Search Results -->
@@ -474,5 +453,48 @@
     <script src="/js/stats.js" defer></script>
     <script src="/js/form.js" defer></script>
     <script src="/js/ctaBanner.js" defer></script>
+    
+    <!-- Google Tag (gtag.js) - Load after page content for better performance -->
+    <script>
+      // Initialize dataLayer immediately (before gtag.js loads)
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'AW-16667558265', {
+        'send_page_view': false // We'll send manually after page load
+      });
+      
+      // Event snippet for Vista de página conversion page
+      gtag('event', 'conversion', {'send_to': 'AW-16667558265/UzlACOet-MoZEPmC24s-'});
+      
+      // Event snippet for Form submission conversion
+      // Call gtag_report_conversion when someone submits a form
+      function gtag_report_conversion(url) {
+        var callback = function () {
+          if (typeof(url) != 'undefined') {
+            window.location = url;
+          }
+        };
+        gtag('event', 'conversion', {
+          'send_to': 'AW-16667558265/UzlACOet-MoZEPmC24s-',
+          'event_callback': callback
+        });
+        return false;
+      }
+      
+      // Load gtag.js asynchronously after page content
+      (function() {
+        var script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=AW-16667558265';
+        script.onload = function() {
+          // Send page view after gtag.js loads
+          gtag('config', 'AW-16667558265', {
+            'send_page_view': true
+          });
+        };
+        document.head.appendChild(script);
+      })();
+    </script>
 </body>
 </html>

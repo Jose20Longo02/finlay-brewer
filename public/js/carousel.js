@@ -141,9 +141,11 @@ class HeroCarousel {
         // Initialize with normal size, no transition
         card.style.transform = 'scale(1)';
         card.style.transition = 'none';
+        // Use fetchpriority="high" for first card (above the fold)
+        const fetchPriority = index === 0 ? 'fetchpriority="high"' : '';
         card.innerHTML = `
             <div class="card-media">
-                <img src="${property.image}" alt="${property.title}" class="card-image" loading="lazy">
+                <img src="${property.image}" alt="${property.title}" class="card-image" loading="${index === 0 ? 'eager' : 'lazy'}" ${fetchPriority} decoding="async">
             </div>
             <div class="card-overlay">
                 <div class="card-overlay-content">

@@ -18,12 +18,22 @@ app.set('views', path.join(__dirname, 'views'));
 // Compression middleware (gzip) - should be early in the middleware stack
 app.use(compression({
   level: 6, // Balance between compression and CPU usage
+  threshold: 1024, // Only compress responses larger than 1KB
   filter: (req, res) => {
     // Don't compress responses with this request header
     if (req.headers['x-no-compression']) {
       return false;
     }
-    // Use compression filter function
+    // Compress JSON, HTML, CSS, JS, and text responses
+    const contentType = res.getHeader('content-type') || '';
+    if (contentType.includes('application/json') || 
+        contentType.includes('text/html') || 
+        contentType.includes('text/css') || 
+        contentType.includes('application/javascript') ||
+        contentType.includes('text/plain')) {
+      return true;
+    }
+    // Use compression filter function for other types
     return compression.filter(req, res);
   }
 }));
